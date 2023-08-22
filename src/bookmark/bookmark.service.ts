@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { CreateBookmarkDto } from './dto/create-bookmark.dto';
 import { UpdateBookmarkDto } from './dto/update-bookmark.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { User } from '@prisma/client';
+import { Bookmark, Prisma } from '@prisma/client';
 
 @Injectable({})
 export class BookmarkService {
@@ -10,7 +10,14 @@ export class BookmarkService {
     private prisma: PrismaService,
   ) { }
 
-  async create(createBookmarkDto: CreateBookmarkDto, user: User) {
+  private userBookmarkSelect: Prisma.UserSelect = {
+    id: true,
+    firstName: true,
+    lastName: true,
+    email: true
+  }
+
+  async create(createBookmarkDto: CreateBookmarkDto, userId: number): Promise<Bookmark> {
     try {
       const userBookmark = await this.prisma.bookmark.create({
         data: {
@@ -18,22 +25,37 @@ export class BookmarkService {
           description: createBookmarkDto.description,
           link: createBookmarkDto.link,
           user: {
-            connect: { id: user.id },
+            connect: { id: userId },
           },
         },
+        include: {
+          user: {
+            select: this.userBookmarkSelect
+          }
+        }
       })
 
-      return {
-        data: userBookmark,
-        message: "Bookmark store successfully"
-      }
+      return userBookmark;
     } catch (error) {
       console.log(error);
     }
   }
 
-  findAll() {
-    return `This action returns all bookmark`;
+  async findAll(userId: number): Promise<Bookmark[]> {
+    const bookmarks = await this.prisma.bookmark.findMany({
+      where: {
+        user: {
+          id: userId
+        }
+      },
+      include: {
+        user: {
+          select: this.userBookmarkSelect
+        }
+      }
+    })
+
+    return bookmarks;
   }
 
   findOne(id: number) {

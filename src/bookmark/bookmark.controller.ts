@@ -12,13 +12,17 @@ export class BookmarkController {
   constructor(private bookmarkService: BookmarkService) { }
 
   @Post()
-  async create(@Body() createBookmarkDto: CreateBookmarkDto, @GetUser() user: User) {
-    return await this.bookmarkService.create(createBookmarkDto, user);
+  async create(@Body() createBookmarkDto: CreateBookmarkDto, @GetUser('id') userId: number) {
+    return await this.bookmarkService.create(createBookmarkDto, userId);
   }
 
   @Get()
-  findAll() {
-    return this.bookmarkService.findAll();
+  async findAll(@GetUser('id') userId: number) {
+    const data = await this.bookmarkService.findAll(userId)
+    return {
+      data,
+      message: 'Get All Bookmark Users'
+    }
   }
 
   @Get(':id')

@@ -24,20 +24,15 @@ export class AuthService {
                     lastName: dto.lastName,
                     email: dto.email,
                     password: hash
-                },
-                select: {
-                    id: true,
-                    email: true,
-                    password: false,
-                    firstName: true,
-                    lastName: true
                 }
             })
 
             const access_token = await this.signToken(user.id, user.email)
 
+            const { password, ...data } = user;
+
             return {
-                data: user,
+                data,
                 access_token,
                 message: "Register successfully"
             }
@@ -70,14 +65,14 @@ export class AuthService {
         //if password incorrect
         if (!passwordMatches) throw new ForbiddenException("Credential incorrect")
 
-        delete user.password
-
         const access_token = await this.signToken(user.id, user.email)
 
+        const { password, ...data } = user;
+
         return {
-            data: user,
+            data,
             access_token,
-            message: "Successfully authentication"
+            message: "Authentication successfully"
         }
     }
 
