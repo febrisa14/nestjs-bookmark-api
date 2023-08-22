@@ -4,7 +4,6 @@ import { CreateBookmarkDto } from './dto/create-bookmark.dto';
 import { UpdateBookmarkDto } from './dto/update-bookmark.dto';
 import { JwtGuard } from 'src/auth/guard';
 import { GetUser } from 'src/decorator';
-import { User } from '@prisma/client';
 
 @UseGuards(JwtGuard)
 @Controller('bookmark')
@@ -26,8 +25,8 @@ export class BookmarkController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.bookmarkService.findOne(+id);
+  async findOne(@Param('id') id: string, @GetUser('id') userId: number) {
+    return await this.bookmarkService.findOne(+id, userId);
   }
 
   @Patch(':id')

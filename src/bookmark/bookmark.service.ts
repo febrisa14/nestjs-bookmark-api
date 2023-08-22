@@ -1,8 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, ForbiddenException, HttpException } from '@nestjs/common';
 import { CreateBookmarkDto } from './dto/create-bookmark.dto';
 import { UpdateBookmarkDto } from './dto/update-bookmark.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { Bookmark, Prisma } from '@prisma/client';
+import { STATUS_CODES } from 'http';
 
 @Injectable({})
 export class BookmarkService {
@@ -58,8 +59,23 @@ export class BookmarkService {
     return bookmarks;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} bookmark`;
+  async findOne(id: number, userId: number): Promise<Bookmark> {
+    const bookmark = await this.prisma.bookmark.findUnique({
+      where: {
+        id
+      }
+    })
+
+    if (!bookmark) {
+      throw new HttpException("Bookmark not found", 404)
+    }
+
+    if (bookmark.userId !== userId) {
+      throw new ForbiddenException("This action is unauthorized")
+    }
+
+    return bookmark;
+
   }
 
   update(id: number, updateBookmarkDto: UpdateBookmarkDto) {
