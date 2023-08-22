@@ -75,11 +75,28 @@ export class BookmarkService {
     }
 
     return bookmark;
-
   }
 
-  update(id: number, updateBookmarkDto: UpdateBookmarkDto) {
-    return `This action updates a #${id} bookmark`;
+  async update(id: number, updateBookmarkDto: UpdateBookmarkDto, userId: number): Promise<Bookmark> {
+    await this.findOne(id, userId);
+
+    const bookmark = await this.prisma.bookmark.update({
+      where: {
+        id
+      },
+      data: {
+        title: updateBookmarkDto.title,
+        description: updateBookmarkDto.description,
+        link: updateBookmarkDto.link,
+      },
+      include: {
+        user: {
+          select: this.userBookmarkSelect
+        }
+      }
+    })
+
+    return bookmark;
   }
 
   remove(id: number) {

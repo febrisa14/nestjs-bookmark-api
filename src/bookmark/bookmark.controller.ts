@@ -26,12 +26,15 @@ export class BookmarkController {
 
   @Get(':id')
   async findOne(@Param('id') id: string, @GetUser('id') userId: number) {
-    return await this.bookmarkService.findOne(+id, userId);
+    return {
+      data: await this.bookmarkService.findOne(+id, userId),
+      message: 'Find By Id Bookmark User'
+    }
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateBookmarkDto: UpdateBookmarkDto) {
-    return this.bookmarkService.update(+id, updateBookmarkDto);
+  async update(@Param('id') id: string, @Body() updateBookmarkDto: UpdateBookmarkDto, @GetUser('id') userId: number) {
+    return await this.bookmarkService.update(+id, updateBookmarkDto, userId);
   }
 
   @Delete(':id')
