@@ -20,7 +20,7 @@ export class BookmarkController {
     const data = await this.bookmarkService.findAll(userId)
     return {
       data,
-      message: 'Get All Bookmark Users'
+      message: 'Retrieve Data All Bookmark Users'
     }
   }
 
@@ -28,13 +28,16 @@ export class BookmarkController {
   async findOne(@Param('id') id: string, @GetUser('id') userId: number) {
     return {
       data: await this.bookmarkService.findOne(+id, userId),
-      message: 'Find By Id Bookmark User'
+      message: 'Retrieve Data By Id Bookmark User'
     }
   }
 
   @Patch(':id')
   async update(@Param('id') id: string, @Body() updateBookmarkDto: UpdateBookmarkDto, @GetUser('id') userId: number) {
-    return await this.bookmarkService.update(+id, updateBookmarkDto, userId);
+    return {
+      data: await this.bookmarkService.update(+id, updateBookmarkDto, userId),
+      messsage: 'Update Bookmark By Id Successfully'
+    }
   }
 
   @Delete(':id')
