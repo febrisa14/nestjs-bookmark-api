@@ -24,17 +24,22 @@ export class AuthService {
                     lastName: dto.lastName,
                     email: dto.email,
                     password: hash
+                },
+                select: {
+                    id: true,
+                    email: true,
+                    password: false,
+                    firstName: true,
+                    lastName: true
                 }
             })
-
-            delete user.password
 
             const access_token = await this.signToken(user.id, user.email)
 
             return {
                 data: user,
                 access_token,
-                message: "Successfully register"
+                message: "Register successfully"
             }
         } catch (error) {
             if (error instanceof PrismaClientKnownRequestError) {
