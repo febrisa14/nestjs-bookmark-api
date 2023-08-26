@@ -3,7 +3,6 @@ import { CreateBookmarkDto } from './dto/create-bookmark.dto';
 import { UpdateBookmarkDto } from './dto/update-bookmark.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { Bookmark, Prisma } from '@prisma/client';
-import { STATUS_CODES } from 'http';
 
 @Injectable({})
 export class BookmarkService {
@@ -99,7 +98,17 @@ export class BookmarkService {
     return bookmark;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} bookmark`;
+  async remove(id: number, userId: number) {
+    await this.findOne(id, userId);
+
+    await this.prisma.bookmark.delete({
+      where: {
+        id
+      }
+    })
+
+    return {
+      message: "Bookmark was deleted"
+    }
   }
 }

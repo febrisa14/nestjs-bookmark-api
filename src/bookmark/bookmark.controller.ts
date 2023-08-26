@@ -41,7 +41,7 @@ export class BookmarkController {
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.bookmarkService.remove(+id);
+  remove(@Param('id') id: string, @GetUser('id') userId: number) {
+    return this.bookmarkService.remove(+id, userId);
   }
 }
